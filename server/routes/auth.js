@@ -1,7 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { v4: uuidv4 } = require('uuid');
+const {
+    findUserByEmail,
+    findUserByReferralCode,
+    findUserById,
+    addUser,
+} = require('../services/googleSheets');
 const router = express.Router();
 
 // HELPER: Generate Referral Code
@@ -14,41 +20,57 @@ router.post('/register', async (req, res) => {
         const { name, email, password, referralCode } = req.body;
 
         // 1. Check if user exists
-        let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ msg: 'User already exists' });
+        const existingUser = await findUserByEmail(email);
+        if (existingUser) {
+            return res.status(400).json({ msg: 'User already exists' });
+        }
 
         // 2. Validate Referral Code (Real Logic)
         let referrer = null;
         if (referralCode) {
-            referrer = await User.findOne({ referralCode });
-            if (!referrer) return res.status(400).json({ msg: 'Invalid referral code' });
+            referrer = await findUserByReferralCode(referralCode);
+            if (!referrer) {
+                return res.status(400).json({ msg: 'Invalid referral code' });
+            }
         }
 
-        // 3. Create User
-        user = new User({
+        // 3. Encrypt Password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // 4. Create User
+        const newUserCode = generateCode();
+        const userId = uuidv4(); // Generate unique ID
+
+        const userData = {
+            id: userId,
             name,
             email,
-            password,
-            referralCode: generateCode(),
-            referredBy: referrer ? referrer.referralCode : null
-        });
+            password: hashedPassword,
+            referralCode: newUserCode,
+            referredBy: referrer ? referrer.referralCode : '',
+        };
 
-        // 4. Encrypt Password
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
+        // 5. Save to Google Sheets
+        const savedUser = await addUser(userData);
 
-        await user.save();
+        // 6. Create Token
+        const payload = { user: { id: savedUser.id } };
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET || 'secret',
+            { expiresIn: '7d' },
+            (err, token) => {
+                if (err) throw err;
 
-        // 5. Create Token
-        const payload = { user: { id: user.id } };
-        jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' }, (err, token) => {
-            if (err) throw err;
-            res.json({ token, user });
-        });
-
+                // Return user without password
+                const { password, ...userWithoutPassword } = savedUser;
+                res.json({ token, user: userWithoutPassword });
+            }
+        );
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+        console.error('Register Error:', err.message);
+        res.status(500).json({ msg: 'Server Error', error: err.message });
     }
 });
 
@@ -59,23 +81,34 @@ router.post('/login', async (req, res) => {
         const { email, password } = req.body;
 
         // 1. Check User
-        let user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ msg: 'Invalid Credentials' });
+        const user = await findUserByEmail(email);
+        if (!user) {
+            return res.status(400).json({ msg: 'Invalid Credentials' });
+        }
 
         // 2. Check Password
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ msg: 'Invalid Credentials' });
+        if (!isMatch) {
+            return res.status(400).json({ msg: 'Invalid Credentials' });
+        }
 
         // 3. Return Token
         const payload = { user: { id: user.id } };
-        jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' }, (err, token) => {
-            if (err) throw err;
-            res.json({ token, user });
-        });
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET || 'secret',
+            { expiresIn: '7d' },
+            (err, token) => {
+                if (err) throw err;
 
+                // Return user without password
+                const { password, ...userWithoutPassword } = user;
+                res.json({ token, user: userWithoutPassword });
+            }
+        );
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+        console.error('Login Error:', err.message);
+        res.status(500).json({ msg: 'Server Error', error: err.message });
     }
 });
 
@@ -85,11 +118,17 @@ const auth = require('../middleware/auth');
 // @desc    Get logged in user
 router.get('/me', auth, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
+        const user = await findUserById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        // Return user without password
+        const { password, ...userWithoutPassword } = user;
+        res.json(userWithoutPassword);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+        console.error('Get Me Error:', err.message);
+        res.status(500).json({ msg: 'Server Error', error: err.message });
     }
 });
 
