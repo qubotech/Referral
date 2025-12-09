@@ -1,0 +1,38 @@
+.profile-setup-container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    min-height: 100vh;
+}
+
+.setup-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.setup-header h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.setup-header p {
+    color: var(--text-secondary);
+}
+
+.profile-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

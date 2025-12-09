@@ -1,0 +1,88 @@
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    /* Critical for padding */
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.logo-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+.logo-icon svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+.logo-text {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.tagline {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+.auth-form {
+    animation: fadeIn 0.3s;
+}
+
+.auth-form h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.form-toggle {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.form-toggle a {
+    color: var(--primary-light);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+
+.form-toggle a:hover {
+    color: var(--primary);
+}
