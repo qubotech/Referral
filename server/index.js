@@ -15,9 +15,41 @@ app.use('/api/auth', require('./routes/auth'));
 // Database Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/referearn';
 
-mongoose.connect(MONGODB_URI)
-    .then(() => console.log('✅ MongoDB Connected (Real Database)'))
-    .catch(err => console.error('❌ Database Connection Error:', err));
+// Add connection options
+const mongooseOptions = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    socketTimeoutMS: 45000,
+};
+
+// Connect to MongoDB
+mongoose.connect(MONGODB_URI, mongooseOptions)
+    .then(() => {
+        console.log('✅ MongoDB Connected Successfully!');
+        console.log('📍 Database:', mongoose.connection.name);
+    })
+    .catch(err => {
+        console.error('❌ Database Connection Error:', err.message);
+        console.error('🔍 Connection String:', MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@')); // Hide password
+        console.error('\n💡 Troubleshooting:');
+        console.error('   1. Check if your IP is whitelisted in MongoDB Atlas');
+        console.error('   2. Verify your credentials are correct');
+        console.error('   3. Ensure your network allows MongoDB connections (port 27017)');
+    });
+
+// Connection event handlers
+mongoose.connection.on('connected', () => {
+    console.log('🔗 Mongoose connected to MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error('❌ Mongoose connection error:', err.message);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('🔌 Mongoose disconnected from MongoDB');
+});
 
 // Basic Route
 app.get('/', (req, res) => {
