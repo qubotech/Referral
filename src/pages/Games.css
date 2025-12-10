@@ -1,74 +1,138 @@
+/* Games Layout */
 .games-container {
     max-width: 480px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
     min-height: 100vh;
+    background: var(--bg-primary);
+    color: white;
 }
 
 .games-header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
-.games-header h2 {
-    font-size: 1.5rem;
+.btn-back {
+    background: var(--surface);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
+.btn-back:hover {
+    background: var(--surface-hover);
+}
+
+.games-progress-bar {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.progress-track {
+    height: 10px;
+    background: var(--bg-tertiary);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--gradient-success);
+    transition: width 0.5s ease;
+}
+
+/* Premium Game Cards */
 .games-grid {
     display: grid;
     gap: 1.5rem;
 }
 
-.game-card {
+.game-card-premium {
+    position: relative;
+    height: 120px;
     background: var(--surface);
-    border: 2px solid transparent;
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    text-align: center;
+    border-radius: 20px;
+    overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: transform 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.game-card:hover {
+.game-card-premium:hover {
+    transform: scale(1.02);
     border-color: var(--primary);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
 }
 
-.game-card.completed {
+.game-card-premium.done {
+    opacity: 0.8;
     border-color: var(--success);
-    background: rgba(16, 185, 129, 0.1);
 }
 
-.game-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+.card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    z-index: 0;
 }
 
-.game-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
+.spin-bg {
+    background: linear-gradient(45deg, #ff00cc, #333399);
 }
 
-.game-card p {
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
+.puzzle-bg {
+    background: linear-gradient(45deg, #00dbde, #fc00ff);
 }
 
-.game-status {
-    display: inline-block;
-    padding: 0.375rem 0.75rem;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 600;
+.memory-bg {
+    background: linear-gradient(45deg, #f857a6, #ff5858);
 }
 
-.game-card.completed .game-status {
+.card-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    padding: 0 1.5rem;
+}
+
+.card-icon {
+    font-size: 2rem;
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.8;
+}
+
+.check-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
     background: var(--success);
-    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
 }
 
 /* Modals */
@@ -78,95 +142,243 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem;
-    animation: fadeIn 0.3s ease;
+    padding: 1rem;
+    animation: fadeIn 0.3s;
 }
 
 .game-modal-content {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    max-width: 500px;
     width: 100%;
+    max-width: 400px;
+    background: #1e1e2ec0;
+    backdrop-filter: blur(20px);
+    border-radius: 30px;
     padding: 2rem;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-/* Spin Wheel */
-.spin-wheel {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto 2rem;
-    border-radius: 50%;
-    background: var(--gradient-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4rem;
-}
-
-.spin-wheel.spinning {
-    animation: spin 3s ease-out;
-    /* Match JS timeout */
-}
-
-/* Memory Game Grid */
-.memory-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.memory-card {
-    aspect-ratio: 1;
-    background: var(--surface);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    perspective: 1000px;
-    border: 2px solid var(--bg-tertiary);
-}
-
-.card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
     text-align: center;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.game-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #fff, #aaa);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.game-instruction {
+    color: #ccc;
+    margin-bottom: 2rem;
+}
+
+.btn-game-primary {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+    transition: 0.2s;
+}
+
+.btn-game-primary:active {
+    transform: scale(0.95);
+}
+
+.btn-close-game {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #aaa;
+    margin-top: 1.5rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* --- SPIN WHEEL --- */
+.wheel-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 0 auto 2rem;
+}
+
+.wheel-pointer {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 25px solid #fff;
+    z-index: 10;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 8px solid white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    transition: transform 5s cubic-bezier(0.1, 0.0, 0.2, 1);
+    /* Realistic Spin Easing */
+    background: conic-gradient(#ff5252 0deg 60deg,
+            /* Red */
+            #ff4081 60deg 120deg,
+            /* Pink */
+            #7c4dff 120deg 180deg,
+            /* Purple */
+            #448aff 180deg 240deg,
+            /* Blue */
+            #69f0ae 240deg 300deg,
+            /* Green */
+            #ffd740 300deg 360deg
+            /* Yellow */
+        );
+}
+
+.wheel-segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.memory-card.flipped .card-inner {
-    transform: rotateY(180deg);
+/* Position emojis in center of segments */
+.wheel-segment span {
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    transform: rotate(45deg);
+    /* Correct orientation */
+    font-size: 1.5rem;
 }
 
-.card-front,
-.card-back {
+.seg-1 {
+    transform: rotate(-30deg) translate(0, -50%);
+}
+
+/* Buggy positioning, simplified conic BG is safer */
+/* Actually, let's just let conic gradient handle colors and overlay items if needed. 
+To keep simple, we just rotate the whole wheel div which has the gradient */
+
+.wheel-center {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    z-index: 5;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* --- PUZZLE --- */
+.puzzle-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 280px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.puzzle-tile {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    border-radius: var(--radius-md);
-    /* Ensure radius applies to inner faces */
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s;
+}
+
+.puzzle-tile:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.puzzle-tile.empty {
+    background: transparent;
+    box-shadow: none;
+    cursor: default;
+}
+
+.puzzle-tile.solved {
+    background: var(--gradient-success);
+}
+
+/* --- MEMORY --- */
+.memory-grid-real {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.memory-card-real {
+    aspect-ratio: 1;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+}
+
+.memory-card-real.flipped,
+.memory-card-real.matched {
+    transform: rotateY(180deg);
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 .card-front {
-    background-color: var(--surface);
+    background: #2d3748;
+    color: #4a5568;
+    border: 2px solid #4a5568;
 }
 
 .card-back {
-    background: var(--gradient-primary);
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    /* Gold gradient */
     transform: rotateY(180deg);
+    border: 2px solid #fff;
 }
