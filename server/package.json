@@ -5,8 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
-        "dev": "nodemon index.js",
-        "build": "echo 'No build required for Express backend'"
+        "dev": "nodemon index.js"
     },
     "dependencies": {
         "axios": "^1.13.2",
