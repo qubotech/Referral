@@ -16,7 +16,7 @@
         "googleapis": "^168.0.0",
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.0.3",
-        "uuid": "^13.0.0"
+        "uuid": "^9.0.2"
     },
     "devDependencies": {
         "nodemon": "^3.0.2"
