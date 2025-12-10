@@ -78,14 +78,20 @@ const Dashboard = () => {
     };
 
     const playGameButton = () => {
-        if (currentTask.required !== -1 && currentTask.completed >= currentTask.required && !currentTask.gamesCompleted) {
-            return (
-                <Button fullWidth onClick={() => navigate('/games')} className="mt-md">
-                    🎮 Play Games to Continue
-                </Button>
-            )
-        }
-        return null;
+        // Always show button, but disable if not unlocked
+        const unlocked = currentTask.required !== -1 && currentTask.completed >= currentTask.required;
+        const className = unlocked ? "mt-md" : "mt-md opacity-50";
+
+        return (
+            <Button
+                fullWidth
+                onClick={() => unlocked ? navigate('/games') : showToast("Identify more people to unlock games!", "info")}
+                className={className}
+                variant={unlocked ? 'primary' : 'secondary'}
+            >
+                {unlocked ? '🎮 Play Games & Earn' : '🔒 Unlock Games (Refer More)'}
+            </Button>
+        )
     }
 
     return (
