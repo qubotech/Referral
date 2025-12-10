@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5001/api';
+const API_URL = import.meta.env.PROD
+    ? 'https://referral-eight.vercel.app/api'
+    : 'http://localhost:5000/api';
 
 // API Helper
 const api = async (endpoint, method = 'GET', data = null) => {
