@@ -1,50 +1,17 @@
 const axios = require('axios');
 
-// Simple Google Sheets integration - no authentication needed!
-// Just make your sheet public and paste the link
-
-const SHEET_URL = process.env.GOOGLE_SHEET_URL;
+const SHEET_API_URL = process.env.GOOGLE_SHEET_URL;
 
 /**
- * Parse CSV data from Google Sheets
- */
-const parseCSV = (csv) => {
-    const lines = csv.trim().split('\n');
-    const headers = lines[0].split(',');
-
-    return lines.slice(1).map(line => {
-        const values = line.split(',');
-        const obj = {};
-        headers.forEach((header, index) => {
-            obj[header.trim()] = values[index]?.trim() || '';
-        });
-        return obj;
-    });
-};
-
-/**
- * Get all users from Google Sheet
+ * Get all users from SheetDB
  */
 const getAllUsers = async () => {
     try {
-        if (!SHEET_URL) {
-            console.warn('⚠️ Google Sheet URL not configured');
-            return [];
-        }
-
-        // Convert Google Sheets URL to CSV export URL
-        const csvUrl = SHEET_URL.replace('/edit#gid=', '/export?format=csv&gid=')
-            .replace('/edit?usp=sharing', '/export?format=csv');
-
-        const response = await axios.get(csvUrl);
-        const users = parseCSV(response.data);
-
-        return users.map((user, index) => ({
-            rowNumber: index + 2,
-            ...user
-        }));
+        if (!SHEET_API_URL) return [];
+        const response = await axios.get(SHEET_API_URL);
+        return response.data;
     } catch (error) {
-        console.error('❌ Error fetching Google Sheet:', error.message);
+        console.error('❌ Error fetching SheetDB:', error.message);
         return [];
     }
 };
@@ -74,21 +41,27 @@ const findUserById = async (id) => {
 };
 
 /**
- * Add user - For now, just log (can't write to public sheet)
- * You'll need to manually add users or use Google Forms
+ * Add user to SheetDB (Reading & Writing now supported!)
  */
 const addUser = async (userData) => {
-    console.log('⚠️ New user registration (add to Google Sheet manually):', {
-        name: userData.name,
-        email: userData.email,
-        referralCode: userData.referralCode
-    });
+    try {
+        // SheetDB expects { data: [ { ... } ] }
+        // Adding createdAt timestamp
+        const newUser = {
+            ...userData,
+            createdAt: new Date().toISOString()
+        };
 
-    // Return user data as if it was saved
-    return {
-        ...userData,
-        createdAt: new Date().toISOString()
-    };
+        await axios.post(SHEET_API_URL, {
+            data: [newUser]
+        });
+
+        console.log('✅ User added to SheetDB:', newUser.email);
+        return newUser;
+    } catch (error) {
+        console.error('❌ Error adding user to SheetDB:', error.message);
+        throw new Error('Failed to save user to database');
+    }
 };
 
 module.exports = {
